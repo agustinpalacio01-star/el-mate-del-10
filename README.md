@@ -42,4 +42,4 @@ No subir secretos ni `.env` a GitHub.
 - Dashboard de pedidos/ventas/estadísticas
 - Logo oficial como asset
 - Ajuste fino de identidad visual a partir de piezas oficiales
-deploy refresh 2
+deploy refresh 1
