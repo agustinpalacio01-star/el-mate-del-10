@@ -199,6 +199,25 @@ function Home() {
         setLoading(false)
       })
   }, [])
+  useEffect(() => {
+  let sessionId = localStorage.getItem('md10-session-id')
+
+  if (!sessionId) {
+    sessionId = crypto.randomUUID()
+    localStorage.setItem('md10-session-id', sessionId)
+  }
+
+  supabase.rpc('track_event', {
+    p_event_type: 'page_view',
+    p_product_id: null,
+    p_order_id: null,
+    p_source: 'web',
+    p_session_id: sessionId,
+    p_metadata: {}
+  }).then(({ error }) => {
+    if (error) console.error('Error registrando visita:', error)
+  })
+}, [])
 
   useEffect(() => {
     localStorage.setItem('emd10-cart', JSON.stringify(cart))
