@@ -78,25 +78,81 @@ function CartDrawer({ open, items, onClose, onChange }: {
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
 
-  const whatsapp = () => {
-    const number = import.meta.env.VITE_WHATSAPP_NUMBER
-    if (!number) {
-      alert('Falta configurar el número de WhatsApp.')
-      return
-    }
-    const lines = items.map(i => `• ${i.quantity} x ${i.product.name} — ${money((i.product.price || 0) * i.quantity)}`)
+  const whatsapp = async () => {
+  const number = import.meta.env.VITE_WHATSAPP_NUMBER
+
+  if (!number) {
+    alert('Falta configurar el número de WhatsApp.')
+    return
+  }
+
+  if (items.length === 0) {
+    alert('Tu pedido está vacío.')
+    return
+  }
+
+  try {
+    const orderCode = `PEDIDO-${Date.now()}`
+
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        order_code: orderCode,
+        customer_name: name || null,
+        customer_location: location || null,
+        total,
+        status: 'Consulta enviada',
+        source: 'web',
+      })
+      .select('id')
+      .single()
+
+    if (orderError) throw orderError
+
+    const orderItems = items.map((item) => ({
+      order_id: order.id,
+      product_id: item.product.id,
+      product_name: item.product.name,
+      quantity: item.quantity,
+      unit_price: item.product.price || 0,
+      subtotal: (item.product.price || 0) * item.quantity,
+    }))
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems)
+
+    if (itemsError) throw itemsError
+
+    const lines = items.map(
+      (i) =>
+        `• ${i.quantity} x ${i.product.name} - ${money(
+          (i.product.price || 0) * i.quantity
+        )}`
+    )
+
     const text = [
       'Hola! Quiero consultar por este pedido de El Mate del 10:',
       '',
       ...lines,
       '',
       `Total de referencia: ${money(total)}`,
+      `Pedido: ${orderCode}`,
       name ? `Nombre: ${name}` : '',
       location ? `Localidad/Provincia: ${location}` : '',
-    ].filter(Boolean).join('\n')
-    window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
-  }
+    ]
+      .filter(Boolean)
+      .join('\n')
 
+    window.open(
+      `https://wa.me/${number}?text=${encodeURIComponent(text)}`,
+      '_blank'
+    )
+  } catch (error) {
+    console.error('Error guardando pedido:', error)
+    alert('No se pudo registrar el pedido. Intentá nuevamente.')
+  }
+}
   return (
     <>
       <div className={`drawer-overlay ${open ? 'show' : ''}`} onClick={onClose} />
