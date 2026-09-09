@@ -301,20 +301,41 @@ function Admin() {
   const [products, setProducts] = useState<Product[]>([])
   const [editing, setEditing] = useState<Product | null>(null)
   const [busy, setBusy] = useState(false)
+  const [orders, setOrders] = useState<any[]>([])
+const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
 
   const load = async () => {
     const { data } = await supabase.from('products').select('*, product_images(*)').order('created_at', { ascending: false })
     setProducts((data || []) as Product[])
   }
 
+  const loadOrders = async () => {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*, order_items(*)')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error cargando pedidos:', error)
+    return
+  }
+
+  setOrders(data || [])
+}
   useEffect(() => {
     supabase.auth.getSession().then(({data}) => {
       setSession(data.session)
-      if (data.session) load()
+      if (data.session) {
+  load()
+  loadOrders()
+}
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s)
-      if (s) load()
+      if (s) {
+  load()
+  loadOrders()
+}
     })
     return () => listener.subscription.unsubscribe()
   }, [])
@@ -416,8 +437,22 @@ function Admin() {
         <div><a href="/" target="_blank" rel="noreferrer">Ver sitio</a><button onClick={logout}><LogOut size={17}/> Salir</button></div>
       </header>
       <section className="admin-content">
-        <div className="admin-title"><div><p className="eyebrow">PANEL PRIVADO</p><h1>PRODUCTOS</h1></div></div>
-        <div className="admin-grid">
+       <div className="admin-title">
+  <div>
+    <p className="eyebrow">PANEL PRIVADO</p>
+    <h1>{adminTab === 'products' ? 'PRODUCTOS' : 'PEDIDOS'}</h1>
+    <div className="admin-tabs">
+      <button type="button" onClick={() => setAdminTab('products')}>
+        PRODUCTOS
+      </button>
+      <button type="button" onClick={() => setAdminTab('orders')}>
+        PEDIDOS
+      </button>
+    </div>
+  </div>
+</div>
+       {adminTab === 'products' && (
+<div className="admin-grid">
           <form className="product-form" onSubmit={saveProduct} key={editing?.id || 'new'}>
             <h2>{editing ? 'Editar convocado' : 'Nuevo convocado'}</h2>
             <input name="name" placeholder="Nombre" defaultValue={editing?.name || ''} required />
@@ -459,6 +494,37 @@ function Admin() {
             ))}
           </div>
         </div>
+      )}
+        {adminTab === 'orders' && (
+  <div className="admin-orders">
+    {orders.length === 0 ? (
+      <p>Todavía no hay pedidos registrados.</p>
+    ) : (
+      orders.map((order: any) => (
+        <div className="admin-order" key={order.id}>
+          <div>
+            <p className="eyebrow">{order.order_code}</p>
+            <h3>{order.customer_name || 'Sin nombre'}</h3>
+            <p>{order.customer_location || 'Sin localidad'}</p>
+          </div>
+
+          <div>
+            <strong>{money(order.total)}</strong>
+            <p>{order.status}</p>
+          </div>
+
+          <div>
+            {(order.order_items || []).map((item: any) => (
+              <p key={item.id}>
+                {item.quantity} × {item.product_name} — {money(item.subtotal)}
+              </p>
+            ))}
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+)}
       </section>
     </main>
   )
