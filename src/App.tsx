@@ -92,37 +92,23 @@ function CartDrawer({ open, items, onClose, onChange }: {
   }
 
   try {
-    const orderCode = `PEDIDO-${Date.now()}`
-
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        order_code: orderCode,
-        customer_name: name || null,
-        customer_location: location || null,
-        total,
-        status: 'Consulta enviada',
-        source: 'web',
-      })
-      .select('id')
-      .single()
-
-    if (orderError) throw orderError
-
-    const orderItems = items.map((item) => ({
-      order_id: order.id,
+    const rpcItems = items.map((item) => ({
       product_id: item.product.id,
       product_name: item.product.name,
       quantity: item.quantity,
       unit_price: item.product.price || 0,
-      subtotal: (item.product.price || 0) * item.quantity,
     }))
 
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems)
+    const { data, error } = await supabase.rpc('create_order', {
+      p_customer_name: name || '',
+      p_customer_location: location || '',
+      p_items: rpcItems,
+      p_source: 'web',
+    })
 
-    if (itemsError) throw itemsError
+    if (error) throw error
+
+    const orderCode = data?.[0]?.order_code || 'PEDIDO'
 
     const lines = items.map(
       (i) =>
