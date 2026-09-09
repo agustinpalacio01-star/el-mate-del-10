@@ -130,6 +130,20 @@ function CartDrawer({ open, items, onClose, onChange }: {
       .filter(Boolean)
       .join('\n')
 
+    const sessionId = localStorage.getItem('md10-session-id')
+const orderId = data?.[0]?.order_id || null
+
+await supabase.rpc('track_event', {
+  p_event_type: 'whatsapp_click',
+  p_product_id: null,
+  p_order_id: orderId,
+  p_source: 'web',
+  p_session_id: sessionId,
+  p_metadata: {
+    order_code: orderCode,
+    total
+  }
+})
     window.open(
       `https://wa.me/${number}?text=${encodeURIComponent(text)}`,
       '_blank'
