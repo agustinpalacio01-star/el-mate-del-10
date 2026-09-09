@@ -339,7 +339,23 @@ const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
     })
     return () => listener.subscription.unsubscribe()
   }, [])
-  const updateOrderStatus = async (orderId: number, status: string) => {
+const updateOrderStatus = async (orderId: number, status: string) => {
+  if (status === 'Confirmado') {
+    const { error } = await supabase.rpc('confirm_order', {
+      p_order_id: orderId,
+    })
+
+    if (error) {
+      console.error('Error confirmando pedido:', error)
+      alert(error.message || 'No se pudo confirmar el pedido.')
+      return
+    }
+
+    await load()
+    await loadOrders()
+    return
+  }
+
   const { error } = await supabase
     .from('orders')
     .update({ status })
