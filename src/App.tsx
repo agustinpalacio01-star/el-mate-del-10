@@ -339,6 +339,20 @@ const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
     })
     return () => listener.subscription.unsubscribe()
   }, [])
+  const updateOrderStatus = async (orderId: number, status: string) => {
+  const { error } = await supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', orderId)
+
+  if (error) {
+    console.error('Error actualizando pedido:', error)
+    alert('No se pudo actualizar el estado del pedido.')
+    return
+  }
+
+  await loadOrders()
+}
 
   const login = async (e: FormEvent) => {
     e.preventDefault()
@@ -508,10 +522,33 @@ const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
             <p>{order.customer_location || 'Sin localidad'}</p>
           </div>
 
-          <div>
-            <strong>{money(order.total)}</strong>
-            <p>{order.status}</p>
-          </div>
+         <div>
+  <strong>{money(order.total)}</strong>
+  <p>{order.status}</p>
+
+  <div className="order-actions">
+    <button
+      type="button"
+      onClick={() => updateOrderStatus(order.id, 'Confirmado')}
+    >
+      CONFIRMAR
+    </button>
+
+    <button
+      type="button"
+      onClick={() => updateOrderStatus(order.id, 'Entregado')}
+    >
+      ENTREGADO
+    </button>
+
+    <button
+      type="button"
+      onClick={() => updateOrderStatus(order.id, 'Cancelado')}
+    >
+      CANCELAR
+    </button>
+  </div>
+</div>
 
           <div>
             {(order.order_items || []).map((item: any) => (
