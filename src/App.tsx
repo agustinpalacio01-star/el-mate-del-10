@@ -229,6 +229,21 @@ function Home() {
       if (found) return prev.map(i => i.product.id === p.id ? {...i, quantity: Math.min(i.quantity + 1, p.stock || 1)} : i)
       return [...prev, { product: p, quantity: 1 }]
     })
+    const sessionId = localStorage.getItem('md10-session-id')
+
+supabase.rpc('track_event', {
+  p_event_type: 'add_to_order',
+  p_product_id: p.id,
+  p_order_id: null,
+  p_source: 'web',
+  p_session_id: sessionId,
+  p_metadata: {
+    product_name: p.name,
+    price: p.price
+  }
+}).then(({ error }) => {
+  if (error) console.error('Error registrando add_to_order:', error)
+})
     setFlash('✓ CONVOCADO')
     setTimeout(() => setFlash(''), 1200)
   }
