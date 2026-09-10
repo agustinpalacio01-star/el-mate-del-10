@@ -458,7 +458,7 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
   border:2px solid #111;
   padding:.75rem;
   display:grid;
-  grid-template-columns:72px minmax(0,1fr) auto auto;
+  grid-template-columns:72px minmax(0,1fr) auto auto auto;
   align-items:center;
   gap:.8rem;
 }
