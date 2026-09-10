@@ -350,7 +350,8 @@ function Admin() {
   const [editing, setEditing] = useState<Product | null>(null)
   const [busy, setBusy] = useState(false)
   const [orders, setOrders] = useState<any[]>([])
-const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
+const [adminTab, setAdminTab] = useState<'products' | 'orders' | 'stats'>('products')
+  const [analytics, setAnalytics] = useState<any[]>([])
 
   const load = async () => {
     const { data } = await supabase.from('products').select('*, product_images(*)').order('created_at', { ascending: false })
@@ -370,12 +371,26 @@ const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
 
   setOrders(data || [])
 }
+  const loadAnalytics = async () => {
+  const { data, error } = await supabase
+    .from('analytics_events')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error cargando estadísticas:', error)
+    return
+  }
+
+  setAnalytics(data || [])
+}
   useEffect(() => {
     supabase.auth.getSession().then(({data}) => {
       setSession(data.session)
       if (data.session) {
   load()
   loadOrders()
+        loadAnalytics()
 }
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, s) => {
@@ -383,6 +398,7 @@ const [adminTab, setAdminTab] = useState<'products' | 'orders'>('products')
       if (s) {
   load()
   loadOrders()
+        loadAnalytics()
 }
     })
     return () => listener.subscription.unsubscribe()
@@ -518,7 +534,7 @@ const updateOrderStatus = async (orderId: number, status: string) => {
        <div className="admin-title">
   <div>
     <p className="eyebrow">PANEL PRIVADO</p>
-    <h1>{adminTab === 'products' ? 'PRODUCTOS' : 'PEDIDOS'}</h1>
+    <h1>{adminTab === 'products' ? 'PRODUCTOS' : adminTab === 'orders' ? 'PEDIDOS' : 'ESTADÍSTICAS'}</h1>
     <div className="admin-tabs">
       <button type="button" onClick={() => setAdminTab('products')}>
         PRODUCTOS
@@ -526,6 +542,9 @@ const updateOrderStatus = async (orderId: number, status: string) => {
       <button type="button" onClick={() => setAdminTab('orders')}>
         PEDIDOS
       </button>
+      <button type="button" onClick={() => setAdminTab('stats')}>
+  ESTADÍSTICAS
+</button>
     </div>
   </div>
 </div>
@@ -624,6 +643,101 @@ const updateOrderStatus = async (orderId: number, status: string) => {
         </div>
       ))
     )}
+  </div>
+)}
+        {adminTab === 'stats' && (
+  <div className="admin-stats">
+    <div className="stat-card">
+      <span>VISITAS</span>
+      <strong>
+        {
+          new Set(
+            analytics
+              .filter((e: any) => e.event_type === 'page_view')
+              .map((e: any) => e.session_id)
+              .filter(Boolean)
+          ).size
+        }
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>AGREGADOS A PEDIDO</span>
+      <strong>
+        {analytics.filter((e: any) => e.event_type === 'add_to_order').length}
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>CLICS A WHATSAPP</span>
+      <strong>
+        {analytics.filter((e: any) => e.event_type === 'whatsapp_click').length}
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>VENTAS</span>
+      <strong>
+        {
+          orders.filter(
+            (o: any) => o.status === 'Confirmado' || o.status === 'Entregado'
+          ).length
+        }
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>FACTURACIÓN</span>
+      <strong>
+        {money(
+          orders
+            .filter(
+              (o: any) =>
+                o.status === 'Confirmado' || o.status === 'Entregado'
+            )
+            .reduce((sum: number, o: any) => sum + Number(o.total || 0), 0)
+        )}
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>TICKET PROMEDIO</span>
+      <strong>
+        {(() => {
+          const sales = orders.filter(
+            (o: any) => o.status === 'Confirmado' || o.status === 'Entregado'
+          )
+
+          if (sales.length === 0) return money(0)
+
+          const revenue = sales.reduce(
+            (sum: number, o: any) => sum + Number(o.total || 0),
+            0
+          )
+
+          return money(revenue / sales.length)
+        })()}
+      </strong>
+    </div>
+
+    <div className="stat-card">
+      <span>PRODUCTOS VENDIDOS</span>
+      <strong>
+        {orders
+          .filter(
+            (o: any) => o.status === 'Confirmado' || o.status === 'Entregado'
+          )
+          .reduce(
+            (total: number, o: any) =>
+              total +
+              (o.order_items || []).reduce(
+                (sum: number, item: any) => sum + Number(item.quantity || 0),
+                0
+              ),
+            0
+          )}
+      </strong>
+    </div>
   </div>
 )}
       </section>
