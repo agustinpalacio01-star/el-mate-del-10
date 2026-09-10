@@ -128,20 +128,113 @@ a{color:inherit;text-decoration:none}
 .section-title{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem}
 .section-title h2{font-size:clamp(2.8rem,6vw,5.5rem);margin:0}
 .section-blue{background:var(--blue);color:white}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
-.product-card{background:white;border:2px solid #111;min-width:0;display:flex;flex-direction:column}
-.product-image{position:relative;aspect-ratio:4/5;background:#ddd;overflow:hidden}
-.product-image img{width:100%;height:100%;object-fit:cover}
-.image-placeholder{display:grid;place-items:center;height:100%;font:900 9rem/1 "Arial Black",sans-serif;color:#bbb}
-.tag{position:absolute;top:.75rem;padding:.45rem .6rem;font-size:.65rem;font-weight:900;letter-spacing:.08em}
-.tag.new{left:.75rem;background:var(--blue);color:#fff}
-.tag.stock{right:.75rem;background:#111;color:#fff}
-.tag.stock.sold{background:#ece7dc;color:#111}
-.product-info{padding:1rem;display:grid;gap:.9rem;flex:1}
-.product-info h3{margin:0;font-size:1.25rem}
-.price{font-size:1.35rem}
-.add-btn{border:0;background:#111;color:#fff;padding:1rem;font-weight:900;align-self:end}
-.add-btn:disabled{background:#b8b6af}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,360px));
+  gap:1.4rem;
+  justify-content:start;
+}
+.product-card{
+  background:#fff;
+  border:2px solid #111;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+
+.product-card:hover{
+  transform:translateY(-4px);
+  box-shadow:7px 7px 0 #111;
+}
+
+.product-image{
+  position:relative;
+  aspect-ratio:4/5;
+  background:#ddd;
+  overflow:hidden;
+  border-bottom:2px solid #111;
+}
+
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.image-placeholder{
+  display:grid;
+  place-items:center;
+  height:100%;
+  font:900 9rem/1 "Arial Black",sans-serif;
+  color:#bbb;
+}
+
+.tag{
+  position:absolute;
+  top:.75rem;
+  padding:.5rem .7rem;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.tag.new{
+  left:.75rem;
+  background:var(--blue);
+  color:#fff;
+}
+
+.tag.stock{
+  right:.75rem;
+  background:#111;
+  color:#fff;
+}
+
+.tag.stock.sold{
+  background:#ece7dc;
+  color:#111;
+}
+
+.product-info{
+  padding:1.2rem;
+  display:grid;
+  gap:.75rem;
+  flex:1;
+}
+
+.product-info h3{
+  margin:0;
+  font-size:1.35rem;
+  line-height:1.05;
+}
+
+.price{
+  font-size:1.55rem;
+  font-weight:900;
+}
+
+.add-btn{
+  border:0;
+  background:#111;
+  color:#fff;
+  padding:1rem;
+  font-weight:900;
+  align-self:stretch;
+  cursor:pointer;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  transition:background .15s ease;
+}
+
+.add-btn:hover{
+  background:var(--blue);
+}
+
+.add-btn:disabled{
+  background:#b8b6af;
+  cursor:not-allowed;
+}
 .brand-break{position:relative;overflow:hidden;background:#111;color:#fff;padding:5rem 7vw;display:flex;align-items:center;justify-content:center;min-height:390px}
 .brand-break h2{font-size:clamp(4rem,10vw,8rem);margin:0;position:relative;z-index:2}
 .brand-break-ten{
