@@ -738,6 +738,55 @@ const updateOrderStatus = async (orderId: number, status: string) => {
           )}
       </strong>
     </div>
+    <div className="stat-card">
+  <span>MÁS VENDIDO</span>
+  <strong>
+    {(() => {
+      const counts = new Map<string, number>()
+
+      orders
+        .filter(
+          (o: any) => o.status === 'Confirmado' || o.status === 'Entregado'
+        )
+        .forEach((o: any) => {
+          ;(o.order_items || []).forEach((item: any) => {
+            const name = item.product_name || 'Producto'
+            counts.set(
+              name,
+              (counts.get(name) || 0) + Number(item.quantity || 0)
+            )
+          })
+        })
+
+      const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]
+
+      return top ? `${top[0]} (${top[1]})` : '—'
+    })()}
+  </strong>
+</div>
+
+<div className="stat-card">
+  <span>MÁS AGREGADO</span>
+  <strong>
+    {(() => {
+      const counts = new Map<string, number>()
+
+      analytics
+        .filter((e: any) => e.event_type === 'add_to_order')
+        .forEach((e: any) => {
+          const name =
+            e.metadata?.product_name ||
+            (e.product_id ? `Producto ${e.product_id}` : 'Producto')
+
+          counts.set(name, (counts.get(name) || 0) + 1)
+        })
+
+      const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]
+
+      return top ? `${top[0]} (${top[1]})` : '—'
+    })()}
+  </strong>
+</div>
   </div>
 )}
       </section>
