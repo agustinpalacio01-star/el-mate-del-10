@@ -27,7 +27,9 @@ function Layout({ children, cartCount, onOpenCart }: { children: React.ReactNode
   return (
     <>
       <header className="topbar">
-        <a href="/" className="logo-link"><BrandMark compact /></a>
+        <a href="/" className="logo-link">
+  <img src="/logo-matedel10.png" alt="El Mate del 10" className="header-logo" />
+</a>
         <nav className={menu ? 'nav open' : 'nav'}>
           <a href="/#catalogo" onClick={() => setMenu(false)}>Catálogo</a>
           <a href="/#nuevos" onClick={() => setMenu(false)}>Recién convocados</a>
