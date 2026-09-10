@@ -608,7 +608,7 @@ const updateOrderStatus = async (orderId: number, status: string) => {
       orders.map((order: any) => (
         <div className="admin-order" key={order.id}>
           <div>
-            <p className="eyebrow">{order.order_code}</p>
+            <p className="eyebrow">#{String(order.id).padStart(4, '0')}</p>
             <h3>{order.customer_name || 'Sin nombre'}</h3>
             <p>{order.customer_location || 'Sin localidad'}</p>
           </div>
