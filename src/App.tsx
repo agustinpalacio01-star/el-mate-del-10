@@ -121,9 +121,9 @@ function CartDrawer({ open, items, onClose, onChange }: {
 const orderId = data?.[0]?.order_id || null
 const displayOrderId = orderId ? `#${String(orderId).padStart(4, '0')}` : orderCode
    const text = [
-  'Hola! 👋 Quiero consultar por este pedido de El Mate del 10:',
+'Hola! Quiero consultar por este pedido de El Mate del 10:',
   '',
-  ...lines.map(line => `🧉 ${line}`),
+  ...lines,
   '',
   `Total: ${money(total)}`,
   '',
