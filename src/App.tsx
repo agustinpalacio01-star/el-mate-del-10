@@ -306,7 +306,7 @@ supabase.rpc('track_event', {
           <div className="brand-break-ten" aria-hidden="true">
   <img src="/10-matedel10.png" alt="" />
 </div>
-          <div><p className="eyebrow invert">EL MATE DEL 10</p><h2>EL QUE ESTÁ<br/>EN TODAS.</h2></div>
+         <div><h2>EL QUE ESTÁ<br/>EN TODAS.</h2></div>
           <div className="rombos">◆ ◆ ◆ ◆ ◆</div>
         </section>
 
