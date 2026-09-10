@@ -288,7 +288,9 @@ supabase.rpc('track_event', {
             <p>Mates, bombillas, materas y accesorios. Producto real, stock real.</p>
             <a className="hero-cta" href="#catalogo">VER CATÁLOGO <ArrowRight /></a>
           </div>
-          <div className="hero-ten" aria-hidden="true">10</div>
+         <div className="hero-ten" aria-hidden="true">
+  <img src="/10-matedel10.png" alt="" />
+</div>
         </section>
 
         {featured.length > 0 && (
