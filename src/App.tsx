@@ -333,7 +333,7 @@ supabase.rpc('track_event', {
       </main>
 
       <footer>
-        <BrandMark />
+        <img src="/logo-matedel10.png" alt="El Mate del 10" className="footer-logo" />
         <p>EL QUE ESTÁ EN TODAS.</p>
         <div className="footer-links">
           <a href={import.meta.env.VITE_INSTAGRAM_URL || 'https://instagram.com/matedel10'} target="_blank" rel="noreferrer"><Instagram size={18}/> Instagram</a>
