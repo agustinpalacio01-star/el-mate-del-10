@@ -86,7 +86,17 @@ a{color:inherit;text-decoration:none}
 }
 .menu-btn{display:none;border:0;background:transparent}
 .hero{min-height:580px;background:var(--blue);color:white;position:relative;overflow:hidden;display:flex;align-items:center;padding:7vw}
-.hero:after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.12) 1px, transparent 1px);background-size:10px 10px;opacity:.25}
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(rgba(255,255,255,.16) 1px,transparent 1px),
+    linear-gradient(115deg,rgba(255,255,255,.035),transparent 35%,rgba(0,0,0,.045) 100%);
+  background-size:10px 10px,100% 100%;
+  opacity:.7;
+  pointer-events:none;
+}
 .hero-copy{position:relative;z-index:2;max-width:720px}
 .hero h1,.brand-break h2,.section-title h2,.admin-title h1{font-family:"Arial Black",Impact,sans-serif;font-size:clamp(3.2rem,8vw,7rem);letter-spacing:-.065em;line-height:.84;margin:.15rem 0 1rem}
 .hero p:not(.eyebrow){max-width:500px;font-size:1.08rem;font-weight:700}
