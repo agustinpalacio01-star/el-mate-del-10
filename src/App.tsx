@@ -118,22 +118,24 @@ function CartDrawer({ open, items, onClose, onChange }: {
           (i.product.price || 0) * i.quantity
         )}`
     )
-
-    const text = [
-      'Hola! Quiero consultar por este pedido de El Mate del 10:',
-      '',
-      ...lines,
-      '',
-      `Total de referencia: ${money(total)}`,
-      `Pedido: ${orderCode}`,
-      name ? `Nombre: ${name}` : '',
-      location ? `Localidad/Provincia: ${location}` : '',
-    ]
-      .filter(Boolean)
-      .join('\n')
+const orderId = data?.[0]?.order_id || null
+const displayOrderId = orderId ? `#${String(orderId).padStart(4, '0')}` : orderCode
+   const text = [
+  'Hola! 👋 Quiero consultar por este pedido de El Mate del 10:',
+  '',
+  ...lines.map(line => `🧉 ${line}`),
+  '',
+  `Total: ${money(total)}`,
+  '',
+  `Pedido: ${displayOrderId}`,
+  name ? `Nombre: ${name}` : '',
+  location ? `Localidad/Provincia: ${location}` : '',
+]
+  .filter(Boolean)
+  .join('\n')
 
     const sessionId = localStorage.getItem('md10-session-id')
-const orderId = data?.[0]?.order_id || null
+
 
 await supabase.rpc('track_event', {
   p_event_type: 'whatsapp_click',
