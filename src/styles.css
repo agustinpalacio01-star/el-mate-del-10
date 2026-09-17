@@ -646,62 +646,92 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
 }
 }
 /* =========================
-   FICHA DE PRODUCTO
+   FICHA DE PRODUCTO V2
    ========================= */
 
 .product-detail{
-  padding:3rem 4rem 5rem;
-  max-width:1400px;
+  max-width:1280px;
   margin:0 auto;
+  padding:2.5rem 3rem 6rem;
 }
 
-.product-detail-inner{
-  display:grid;
-  grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
-  gap:4rem;
-  align-items:start;
-}
+/* Volver */
 
 .product-detail-back{
-  background:none;
+  display:inline-flex;
+  align-items:center;
+  width:auto;
+  background:transparent;
   border:0;
   padding:0;
   margin:0 0 2rem;
+  color:#111;
   font:inherit;
-  font-weight:800;
-  font-size:.8rem;
+  font-size:.72rem;
+  font-weight:900;
   letter-spacing:.08em;
+  text-transform:uppercase;
   cursor:pointer;
 }
+
+.product-detail-back:hover{
+  text-decoration:underline;
+}
+
+/* Layout principal */
+
+.product-detail-inner{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);
+  gap:5rem;
+  align-items:start;
+}
+
+/* GALERÍA */
 
 .product-detail-gallery{
   min-width:0;
 }
 
 .product-main-image{
+  position:relative;
   width:100%;
   background:#fff;
   overflow:hidden;
 }
 
+.product-main-image::after{
+  content:"EL MATE DEL 10";
+  position:absolute;
+  left:1rem;
+  bottom:1rem;
+  background:#111;
+  color:#fff;
+  padding:.55rem .7rem;
+  font-size:.58rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
 .product-main-image img{
   display:block;
   width:100%;
-  height:auto;
-  max-height:720px;
+  height:620px;
   object-fit:contain;
 }
 
+/* Miniaturas */
+
 .product-thumbnails{
   display:flex;
-  gap:.75rem;
-  margin-top:1rem;
+  gap:.7rem;
+  margin-top:.8rem;
   flex-wrap:wrap;
 }
 
 .product-thumbnail{
-  width:82px;
-  height:82px;
+  width:78px;
+  height:78px;
   padding:0;
   border:2px solid transparent;
   background:#fff;
@@ -716,71 +746,130 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
   display:block;
 }
 
+.product-thumbnail:hover,
 .product-thumbnail.active{
   border-color:#111;
 }
 
+/* INFORMACIÓN */
+
 .product-detail-info{
   position:sticky;
   top:100px;
-  padding-top:1rem;
+  padding-top:.5rem;
 }
 
 .product-detail-info .eyebrow{
-  margin-bottom:.75rem;
-}
-
-.product-detail-info h1{
-  font-size:clamp(2.2rem,4vw,4.8rem);
-  line-height:.92;
-  margin:0 0 1.5rem;
-  text-transform:uppercase;
-}
-
-.product-detail-price{
-  display:block;
-  font-size:2rem;
+  display:inline-block;
+  margin:0 0 1rem;
+  font-size:.68rem;
   font-weight:900;
-  margin-bottom:1.5rem;
-}
-
-.product-description{
-  border-top:1px solid #111;
-  border-bottom:1px solid #111;
-  padding:1.5rem 0;
-  margin:1.5rem 0;
-}
-
-.product-description h3{
-  margin:0 0 .75rem;
-  font-size:.75rem;
   letter-spacing:.12em;
   text-transform:uppercase;
 }
 
-.product-description p{
+.product-detail-info h1{
+  max-width:620px;
   margin:0;
-  line-height:1.65;
-  font-size:1rem;
+  font-size:clamp(3rem,5vw,5.5rem);
+  line-height:.86;
+  letter-spacing:-.055em;
+  text-transform:uppercase;
 }
 
+/* Precio */
+
+.product-detail-price{
+  display:block;
+  margin:2rem 0 0;
+  padding-bottom:1.5rem;
+  border-bottom:2px solid #111;
+  font-size:2rem;
+  font-weight:900;
+  letter-spacing:-.03em;
+}
+
+/* Descripción */
+
+.product-description{
+  margin:0;
+  padding:1.6rem 0;
+  border-bottom:1px solid #111;
+}
+
+.product-description h3{
+  margin:0 0 .8rem;
+  font-size:.65rem;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.product-description p{
+  max-width:540px;
+  margin:0;
+  font-size:.95rem;
+  line-height:1.65;
+}
+
+/* Botón principal */
+
 .product-detail-add{
+  display:flex;
+  align-items:center;
+  justify-content:center;
   width:100%;
-  min-height:58px;
-  margin-top:1rem;
-  font-size:.85rem;
+  min-height:64px;
+  margin-top:1.5rem;
+  border:2px solid #111;
+  background:#111;
+  color:#fff;
+  font-size:.75rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:transform .15s ease, background .15s ease;
+}
+
+.product-detail-add:hover:not(:disabled){
+  transform:translateY(-2px);
+  background:#1648ff;
+  border-color:#1648ff;
 }
 
 .product-detail-add:disabled{
-  opacity:.45;
+  opacity:.4;
   cursor:not-allowed;
 }
 
-/* MOBILE */
+/* Pequeño remate de marca */
+
+.product-detail-info::after{
+  content:"EL QUE ESTÁ EN TODAS.  ◆ ◆ ◆ ◆";
+  display:block;
+  margin-top:1.5rem;
+  padding:1rem;
+  background:#111;
+  color:#fff;
+  font-size:.62rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-align:center;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
 
 @media (max-width:800px){
+
   .product-detail{
-    padding:1.5rem 1rem 3rem;
+    padding:1.25rem 1rem 3.5rem;
+  }
+
+  .product-detail-back{
+    margin-bottom:1.25rem;
   }
 
   .product-detail-inner{
@@ -788,12 +877,14 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
     gap:1.5rem;
   }
 
-  .product-detail-back{
-    margin-bottom:1rem;
+  .product-main-image img{
+    height:auto;
+    max-height:none;
   }
 
-  .product-main-image img{
-    max-height:none;
+  .product-main-image::after{
+    left:.7rem;
+    bottom:.7rem;
   }
 
   .product-detail-info{
@@ -802,15 +893,21 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
   }
 
   .product-detail-info h1{
-    font-size:2.4rem;
+    font-size:clamp(2.7rem,14vw,4.2rem);
+    line-height:.88;
   }
 
   .product-detail-price{
-    font-size:1.6rem;
+    margin-top:1.4rem;
+    font-size:1.65rem;
   }
 
   .product-thumbnail{
-    width:68px;
-    height:68px;
+    width:64px;
+    height:64px;
+  }
+
+  .product-detail-add{
+    min-height:58px;
   }
 }
