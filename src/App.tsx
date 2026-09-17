@@ -414,7 +414,7 @@ supabase.rpc('track_event', {
       .filter(i => i.quantity > 0))
   }
 
-  const categories = ['Todos', ...Array.from(new Set(products.map(p => p.category).filter(Boolean) as string[]))]
+const categories = ['Todos', 'Mates', 'Yerbas', 'Bombillas', 'Canastas']
   const filtered = category === 'Todos' ? products : products.filter(p => p.category === category)
   const featured = products.filter(p => p.is_featured).slice(0, 4)
   const newOnes = products.filter(p => p.is_new).slice(0, 4)
@@ -754,7 +754,13 @@ if (productId && files.length > 0) {
             <h2>{editing ? 'Editar convocado' : 'Nuevo convocado'}</h2>
             <input name="name" placeholder="Nombre" defaultValue={editing?.name || ''} required />
             <div className="form-row">
-              <input name="category" placeholder="Categoría (Mates, Bombillas...)" defaultValue={editing?.category || ''} required />
+             <select name="category" defaultValue={editing?.category || ''} required>
+  <option value="" disabled>Seleccionar categoría</option>
+  <option value="Mates">Mates</option>
+  <option value="Yerbas">Yerbas</option>
+  <option value="Bombillas">Bombillas</option>
+  <option value="Canastas">Canastas</option>
+</select>
               <input name="model" placeholder="Modelo / tipo" defaultValue={editing?.model || ''} />
             </div>
             <div className="form-row">
