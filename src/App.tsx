@@ -494,7 +494,7 @@ if (selectedProduct) {
   product={p}
   onAdd={add}
   onOpen={setSelectedProduct}
-/>
+/>)}
             </div>
           )}
         </section>
@@ -508,7 +508,7 @@ if (selectedProduct) {
   product={p}
   onAdd={add}
   onOpen={setSelectedProduct}
-/>
+/>)}
             </div>
           </section>
         )}
