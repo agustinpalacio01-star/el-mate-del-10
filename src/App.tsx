@@ -655,27 +655,39 @@ const updateOrderStatus = async (orderId: number, status: string) => {
       else productId = data.id
     }
 
-    const file = form.get('photo') as File
-    if (productId && file && file.size > 0) {
-      const ext = file.name.split('.').pop() || 'jpg'
-      const path = `${productId}/${Date.now()}.${ext}`
-      const { error: uploadError } = await supabase.storage.from('product-images').upload(path, file)
-      if (uploadError) {
-        alert(uploadError.message)
-      } else {
-        const { data: publicUrl } = supabase.storage.from('product-images').getPublicUrl(path)
-        if (editing) {
-          const existing = editing.product_images?.[0]
-          if (existing) await supabase.from('product_images').update({ is_cover: false }).eq('id', existing.id)
-        }
-        await supabase.from('product_images').insert({
-          product_id: productId,
-          image_url: publicUrl.publicUrl,
-          position: 0,
-          is_cover: true,
-        })
-      }
+  const files = form.getAll('photo') as File[]
+
+if (productId && files.length > 0) {
+  const validFiles = files.filter(file => file && file.size > 0)
+
+  for (let index = 0; index < validFiles.length; index++) {
+    const file = validFiles[index]
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `${productId}/${Date.now()}-${index}.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(path, file)
+
+    if (uploadError) {
+      alert(uploadError.message)
+      return
     }
+
+    const { data: publicUrl } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(path)
+
+   const existingImages = products.find(p => p.id === productId)?.product_images || []
+
+    await supabase.from('product_images').insert({
+      product_id: productId,
+      image_url: publicUrl.publicUrl,
+      position: existingImages.length + index,
+      is_cover: existingImages.length === 0 && index === 0,
+    })
+  }
+}
 
     setEditing(null)
     setBusy(false)
@@ -750,7 +762,10 @@ const updateOrderStatus = async (orderId: number, status: string) => {
               <input name="stock" type="number" min="0" placeholder="Stock" defaultValue={editing?.stock ?? 1} required />
             </div>
             <textarea name="description" placeholder="Descripción" defaultValue={editing?.description || ''}/>
-            <label className="file-label">Foto principal <input name="photo" type="file" accept="image/*"/></label>
+           <label className="file-label">
+  Fotos del producto
+  <input name="photo" type="file" accept="image/*" multiple />
+</label>
             <div className="checks">
               <label><input name="is_new" type="checkbox" defaultChecked={!!editing?.is_new}/> Nuevo</label>
               <label><input name="is_featured" type="checkbox" defaultChecked={!!editing?.is_featured}/> Titular</label>
