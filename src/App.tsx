@@ -46,27 +46,168 @@ function Layout({ children, cartCount, onOpenCart }: { children: React.ReactNode
   )
 }
 
-function ProductCard({ product, onAdd }: { product: Product, onAdd: (p: Product) => void }) {
-  const cover = product.product_images?.slice().sort((a,b) => Number(b.is_cover) - Number(a.is_cover) || a.position - b.position)[0]?.image_url
+function ProductCard({
+  product,
+  onAdd,
+  onOpen,
+}: {
+  product: Product
+  onAdd: (p: Product) => void
+  onOpen: (p: Product) => void
+}) {
+  const cover = product.product_images
+    ?.slice()
+    .sort(
+      (a, b) =>
+        Number(b.is_cover) - Number(a.is_cover) ||
+        (a.position || 0) - (b.position || 0)
+    )[0]?.image_url
+
   const soldOut = !product.stock || product.stock <= 0
+
   return (
     <article className="product-card">
-      <div className="product-image">
-        {cover ? <img src={cover} alt={product.name || 'Producto'} /> : <div className="image-placeholder">10</div>}
+      <div
+        className="product-image"
+        onClick={() => onOpen(product)}
+        role="button"
+        tabIndex={0}
+      >
+        {cover ? (
+          <img src={cover} alt={product.name || "Producto"} />
+        ) : (
+          <div className="image-placeholder">10</div>
+        )}
+
         {product.is_new && <span className="tag new">NUEVO</span>}
-        <span className={`tag stock ${soldOut ? 'sold' : ''}`}>{stockLabel(product.stock)}</span>
+
+        <span className={`tag stock ${soldOut ? "sold" : ""}`}>
+          {stockLabel(product.stock)}
+        </span>
       </div>
+
       <div className="product-info">
-        <div>
-          <p className="eyebrow">{product.model || product.category || 'El Mate del 10'}</p>
-          <h3>{product.name || 'Producto'}</h3>
+        <div
+          className="product-card-open"
+          onClick={() => onOpen(product)}
+          role="button"
+          tabIndex={0}
+        >
+          <p className="eyebrow">
+            {product.model || product.category || "El Mate del 10"}
+          </p>
+          <h3>{product.name || "Producto"}</h3>
         </div>
+
         <strong className="price">{money(product.price)}</strong>
-        <button className="add-btn" disabled={soldOut} onClick={() => onAdd(product)}>
-          {soldOut ? 'AGOTADO' : '+ AGREGAR AL PEDIDO'}
+
+        <button
+          className="add-btn"
+          disabled={soldOut}
+          onClick={() => onAdd(product)}
+        >
+          {soldOut ? "AGOTADO" : "+ AGREGAR AL PEDIDO"}
         </button>
       </div>
     </article>
+  )
+}
+
+function ProductDetail({
+  product,
+  onAdd,
+  onBack,
+}: {
+  product: Product
+  onAdd: (p: Product) => void
+  onBack: () => void
+}) {
+  const images = [...(product.product_images || [])].sort(
+    (a, b) =>
+      Number(b.is_cover) - Number(a.is_cover) ||
+      (a.position || 0) - (b.position || 0)
+  )
+
+  const [activeImage, setActiveImage] = useState(
+    images[0]?.image_url || ""
+  )
+
+  const soldOut = !product.stock || product.stock <= 0
+
+  return (
+    <section className="product-detail">
+      <div className="product-detail-inner">
+        <button type="button" className="product-back" onClick={onBack}>
+          ← VOLVER AL CATÁLOGO
+        </button>
+
+        <div className="product-detail-grid">
+          <div className="product-gallery">
+            <div className="product-main-image">
+              {activeImage ? (
+                <img src={activeImage} alt={product.name || "Producto"} />
+              ) : (
+                <div className="image-placeholder">10</div>
+              )}
+            </div>
+
+            {images.length > 1 && (
+              <div className="product-thumbnails">
+                {images.map((image) => (
+                  <button
+                    type="button"
+                    key={image.id}
+                    className={
+                      activeImage === image.image_url
+                        ? "product-thumb active"
+                        : "product-thumb"
+                    }
+                    onClick={() => setActiveImage(image.image_url)}
+                  >
+                    <img
+                      src={image.image_url}
+                      alt={product.name || "Producto"}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="product-detail-info">
+            <p className="eyebrow">
+              {product.model || product.category || "El Mate del 10"}
+            </p>
+
+            <h1>{product.name || "Producto"}</h1>
+
+            <span className={`tag stock ${soldOut ? "sold" : ""}`}>
+              {stockLabel(product.stock)}
+            </span>
+
+            <strong className="product-detail-price">
+              {money(product.price)}
+            </strong>
+
+            {product.description && (
+              <div className="product-description">
+                <h3>DETALLES</h3>
+                <p>{product.description}</p>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="add-btn product-detail-add"
+              disabled={soldOut}
+              onClick={() => onAdd(product)}
+            >
+              {soldOut ? "AGOTADO" : "+ AGREGAR AL PEDIDO"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -203,6 +344,7 @@ function Home() {
     try { return JSON.parse(localStorage.getItem('emd10-cart') || '[]') } catch { return [] }
   })
   const [cartOpen, setCartOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [flash, setFlash] = useState('')
 
   useEffect(() => {
@@ -277,7 +419,30 @@ supabase.rpc('track_event', {
   const featured = products.filter(p => p.is_featured).slice(0, 4)
   const newOnes = products.filter(p => p.is_new).slice(0, 4)
   const cartCount = cart.reduce((s,i) => s + i.quantity, 0)
+if (selectedProduct) {
+  return (
+    <Layout
+      cartCount={cartCount}
+      onOpenCart={() => setCartOpen(true)}
+    >
+      <ProductDetail
+        product={selectedProduct}
+        onAdd={add}
+        onBack={() => {
+          setSelectedProduct(null)
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        }}
+      />
 
+      <CartDrawer
+        open={cartOpen}
+        items={cart}
+        onClose={() => setCartOpen(false)}
+        onChange={change}
+      />
+    </Layout>
+  )
+}
   return (
     <Layout cartCount={cartCount} onOpenCart={() => setCartOpen(true)}>
       {flash && <div className="flash">{flash}</div>}
@@ -299,7 +464,12 @@ supabase.rpc('track_event', {
           <section className="section">
             <div className="section-title"><p className="eyebrow">SELECCIÓN</p><h2>TITULARES</h2></div>
             <div className="grid">
-              {featured.map(p => <ProductCard key={p.id} product={p} onAdd={add}/>)}
+              {featured.map(p =><ProductCard
+  key={p.id}
+  product={p}
+  onAdd={add}
+  onOpen={setSelectedProduct}
+/>
             </div>
           </section>
         )}
@@ -319,7 +489,12 @@ supabase.rpc('track_event', {
           </div>
           {loading ? <p>Cargando catálogo...</p> : (
             <div className="grid">
-              {filtered.map(p => <ProductCard key={p.id} product={p} onAdd={add}/>)}
+              {filtered.map(p => <ProductCard
+  key={p.id}
+  product={p}
+  onAdd={add}
+  onOpen={setSelectedProduct}
+/>
             </div>
           )}
         </section>
@@ -328,7 +503,12 @@ supabase.rpc('track_event', {
           <section className="section section-blue" id="nuevos">
             <div className="section-title"><p className="eyebrow invert">NOVEDADES</p><h2>RECIÉN CONVOCADOS</h2></div>
             <div className="grid">
-              {newOnes.map(p => <ProductCard key={p.id} product={p} onAdd={add}/>)}
+              {newOnes.map(p => <ProductCard
+  key={p.id}
+  product={p}
+  onAdd={add}
+  onOpen={setSelectedProduct}
+/>
             </div>
           </section>
         )}
