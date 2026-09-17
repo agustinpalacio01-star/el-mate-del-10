@@ -695,6 +695,32 @@ if (productId && files.length > 0) {
     e.currentTarget.reset()
   }
 
+ const deleteProductImage = async (imageId: number) => {
+  const ok = window.confirm('¿Eliminar esta foto del producto?')
+  if (!ok) return
+
+  const { error } = await supabase
+    .from('product_images')
+    .delete()
+    .eq('id', imageId)
+
+  if (error) {
+    alert('No se pudo eliminar la foto')
+    console.error(error)
+    return
+  }
+
+  if (editing) {
+    setEditing({
+      ...editing,
+      product_images: (editing.product_images || []).filter(
+        (img: any) => img.id !== imageId
+      )
+    })
+  }
+
+  await load()
+}
   const toggleStock = async (p: Product) => {
     await supabase.from('products').update({ stock: (p.stock || 0) > 0 ? 0 : 1 }).eq('id', p.id)
     load()
@@ -772,6 +798,21 @@ if (productId && files.length > 0) {
   Fotos del producto
   <input name="photo" type="file" accept="image/*" multiple />
 </label>
+            {editing && (editing.product_images || []).length > 0 && (
+  <div className="admin-edit-images">
+    {(editing.product_images || []).map((img: any) => (
+      <div className="admin-edit-image" key={img.id}>
+        <img src={img.image_url} alt="" />
+        <button
+          type="button"
+          onClick={() => deleteProductImage(img.id)}
+        >
+          ELIMINAR
+        </button>
+      </div>
+    ))}
+  </div>
+)}
             <div className="checks">
               <label><input name="is_new" type="checkbox" defaultChecked={!!editing?.is_new}/> Nuevo</label>
               <label><input name="is_featured" type="checkbox" defaultChecked={!!editing?.is_featured}/> Titular</label>
@@ -781,6 +822,26 @@ if (productId && files.length > 0) {
               {editing && <button type="button" onClick={() => setEditing(null)}>Cancelar</button>}
               <button className="admin-primary" disabled={busy}>{busy ? 'GUARDANDO...' : 'GUARDAR PRODUCTO'}</button>
             </div>
+            {editing && editing.product_images && editing.product_images.length > 0 && (
+  <div className="admin-photo-manager">
+    <p className="eyebrow">FOTOS CARGADAS</p>
+
+    <div className="admin-photo-grid">
+      {editing.product_images.map((image: any) => (
+        <div className="admin-photo-item" key={image.id}>
+          <img src={image.image_url} alt="" />
+
+          <button
+            type="button"
+            onClick={() => deleteProductImage(image.id)}
+          >
+            × ELIMINAR
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
           </form>
 
           <div className="admin-list">
