@@ -915,3 +915,25 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
     min-height:58px;
   }
 }
+/* BOTÓN VOLVER - FICHA DE PRODUCTO */
+.product-back {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 18px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111;
+  cursor: pointer;
+  width: fit-content;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.product-back:hover {
+  transform: translateX(-4px);
+  opacity: 0.65;
+}
