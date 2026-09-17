@@ -681,6 +681,10 @@ footer{background:#111;color:#fff;padding:4rem 5vw;display:flex;align-items:cent
 /* Layout principal */
 
 .product-detail-inner{
+  display:block;
+}
+
+.product-detail-grid{
   display:grid;
   grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);
   gap:5rem;
